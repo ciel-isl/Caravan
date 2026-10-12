@@ -73,6 +73,41 @@ PAUSE     = False
 GAME_FLOW = "HOME"
 in_play   = False
 
+# audio
+AUDIO_ENABLED = True
+try:
+    pygame.mixer.init()
+except pygame.error as e: # mutes audio when error instead of crashing
+    print("Audio Error!")
+    AUDIO_ENABLED = False
+
+# audio channels (can only play audio on channels)
+CH_BGM = pygame.mixer.Channel(0)
+CH_FX1 = pygame.mixer.Channel(1) # can't overlap channel
+CH_FX2 = pygame.mixer.Channel(2) # can   overlap channel
+current_bgm = None
+
+# volume (sets volume for all channels)
+pygame.mixer.Channel(0).set_volume(0.25)
+pygame.mixer.Channel(1).set_volume(0.30)
+pygame.mixer.Channel(2).set_volume(0.35)
+
+# bgm
+HOME_BGM = pygame.mixer.Sound("Assets/Audio/home.mp3")
+VOGUE    = pygame.mixer.Sound("Assets/Audio/The Vogue City.mp3")
+MERCURY  = pygame.mixer.Sound("Assets/Audio/The Mercury City.mp3")
+FOOLS    = pygame.mixer.Sound("Assets/Audio/City of Fools.mp3")
+TEARS    = pygame.mixer.Sound("Assets/Audio/City of Tears.mp3")
+
+# sfx
+buy      = pygame.mixer.Sound("Assets/Audio/buy_stuff.mp3")
+click    = pygame.mixer.Sound("Assets/Audio/click_buttons.mp3")
+pick     = pygame.mixer.Sound("Assets/Audio/pick_card.mp3")
+sell     = pygame.mixer.Sound("Assets/Audio/sell.mp3")
+shuffle  = pygame.mixer.Sound("Assets/Audio/shuffle.mp3")
+lose     = pygame.mixer.Sound("Assets/Audio/lose.mp3")
+win_rnd  = pygame.mixer.Sound("Assets/Audio/win.mp3")
+
 # window
 win          = pygame.display.set_mode((SCRN_WIDTH, SCRN_HEIGHT), pygame.RESIZABLE)
 scrn         = pygame.Surface((SCRN_WIDTH, SCRN_HEIGHT))
@@ -197,7 +232,7 @@ TRAIT_DEFS = {
     "Charisma":         {"desc": "Every city now have 'Entertainment'\nstocked-up and 'Buffed'."},
     "Gambler":          {"desc": "1/6 chance to gain x6\nwhen selling 'Dice'."},
     "Mascot":           {"desc": "x3.5 to all 'Miffy'."},
-    "Negotiator":       {"desc": "50%" "discount at the market."},
+    "Negotiator":       {"desc": "50%" " discount at the market."},
     "Flood Control":    {"desc": "Selling a boat wins the round."},
     "Book Worm":        {"desc": "x2 to all 'School'."}
 }
