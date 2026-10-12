@@ -74,6 +74,52 @@ def virtual(pos):
         (x-view_x)/view_scale,
         (y-view_y)/view_scale)
 
+# audio
+def audio_pause():
+    if not AUDIO_ENABLED:
+        return # exit function if no audio
+    CH_BGM.pause()
+
+def audio_unpause():
+    if not AUDIO_ENABLED:
+        return # exit function if no audio
+    CH_BGM.unpause()
+
+def audio_fx(effect):
+    if not AUDIO_ENABLED:
+        return                         # exit function if no audio
+
+    match effect:                      # easily handles playing & switching audio & channels
+        case "bought"    : CH_FX1.play(buy)
+        case "button"    : CH_FX2.play(click)
+        case "pick_card" : CH_FX2.play(pick)
+        case "sold"      : CH_FX1.play(sell)
+        case "shuffle"   : CH_FX1.play(shuffle)
+        case "defeat"    : CH_FX2.play(lose)
+        case "win_round" : CH_FX2.play(win_rnd)
+
+def audio_bgm(city):                   # loops bgm based on city_name
+    global current_bgm
+
+    if not AUDIO_ENABLED: return False # exit function if no audio
+
+    if not city:                       # if there is no city, then play this
+        track, name = HOME_BGM, "home"
+    else:
+        match city:
+            case "The Vogue City"   : track, name = VOGUE, "vogue"
+            case "The Mercury City" : track, name = MERCURY, "mercury"
+            case "City of Fools"    : track, name = FOOLS, "fools"
+            case "City of Tears"    : track, name = TEARS, "tears"
+            case _                  : track, name = HOME_BGM, "home"
+
+    # do nothing if already playing the same input
+    if current_bgm == name:
+        return
+
+    current_bgm = name
+    CH_BGM.play(track, loops = -1)
+
 # classes
 class Menu_Bg(pygame.sprite.Sprite):
     def __init__(self,groups):
