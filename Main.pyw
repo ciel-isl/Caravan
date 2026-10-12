@@ -292,7 +292,9 @@ def next_event():
 
 # game states
 def home():
-    global RUNNING, GAME_FLOW, menu_group
+    global RUNNING, GAME_FLOW, AUDIO_ENABLED, menu_group
+
+    audio_bgm(None)
 
     if menu_group is None:
         setup_home()
@@ -323,14 +325,17 @@ def home():
         elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
             vpos     = virtual(e.pos)
             if btn_play.hit(vpos):
+                audio_fx("button")
                 transition_in()
                 GAME_FLOW = "NEW_GAME"
                 home.entered = False
                 return
             elif btn_tutorial.hit(vpos):
+                audio_fx("button")
                 tutor.open(scrn)        # open as overlay, no need for GAME_FLOW change
                 return
             elif btn_exit.hit(vpos):
+                audio_fx("button")
                 RUNNING   = False
 
     mouse = virtual(pygame.mouse.get_pos())
@@ -374,7 +379,8 @@ def new_game():
     next_special   = "MARKET"
 
     city_name = City.change()['name']
-
+    
+    audio_bgm(city_name)
     setup_game_ui()
     setup_level()
     GAME_FLOW = "PLAY"
@@ -404,6 +410,7 @@ def play():
     if SCORE < QUOTA:
         if check_lose_condition():
             GAME_FLOW = "GAME_OVER"
+            audio_fx("defeat")
             return
 
     for e in pygame.event.get():
@@ -420,7 +427,10 @@ def play():
 
         # pause
         if e.type   == pygame.KEYDOWN and e.key == pygame.K_SPACE:
+            audio_fx("button")
             PAUSE = not PAUSE
+            if PAUSE: audio_pause()
+            else:   audio_unpause()
             continue
 
         # mouse input
@@ -429,18 +439,27 @@ def play():
 
             #pause
             if ui_pause.hit(vpos):
+                audio_fx("button")
                 PAUSE = not PAUSE
+                if PAUSE: audio_pause()
+                else:   audio_unpause()
                 continue
 
             # if paused, only pause menu buttons respond
             if PAUSE:
                 action = pause_menu_click(vpos)
+                PAUSE = True
                 if action == "RESUME":
                     PAUSE = False
+                    audio_unpause()
+                    audio_fx("button")
                 elif action == "TUTORIAL":
+                    audio_fx("button")
                     tutor.open(scrn)       # PAUSE should stay True so we can go back to it after tutorial exit
                 elif action == "EXIT":
                     PAUSE = False
+                    audio_unpause()
+                    audio_fx("button")
                     transition_in()
                     home.entered = False
                     GAME_FLOW = "HOME"
@@ -450,11 +469,13 @@ def play():
             # long-press tracking on trait
             trait_press = trait_hit(vpos)
             if trait_press:
+                audio_fx("button")
                 trait_time = pygame.time.get_ticks()
                 continue
 
             # sell
             if ui_sell.hit(vpos) and picked and sells > 0:
+                audio_fx("sold")
                 # every boot sold adds +50 to all clothing
                 if "Marathon" in owned_traits:
                     boots_sold = sum(1 for c in picked if c.name == "Boots")
@@ -482,11 +503,13 @@ def play():
                     SCORE = max(SCORE, QUOTA) # forced quota met
 
                 if SCORE  >= QUOTA:
+                    audio_fx("win_round")
                     next_event()
                     return
 
             # shuffle
             if ui_shuffle.hit(vpos) and shuffles > 0:
+                audio_fx("shuffle")
                 shuffles -= 1
                 random.shuffle(deck.cards)
                 clear_selection()
@@ -502,9 +525,11 @@ def play():
 
             if hit:
                 if hit in picked:
+                    audio_fx("pick_card")
                     picked.remove(hit)
                     hit.lower()
                 elif len(picked) < 3:
+                    audio_fx("pick_card")
                     picked.append(hit)
                     hit.raise_up()
                 continue
@@ -616,6 +641,7 @@ def market_screen():
             next_rect        = pygame.Rect(0, 0, 195, 50)
             next_rect.center = (SCRN_WIDTH - 120, SCRN_HEIGHT - 40)
             if next_rect.collidepoint(vpos):
+                audio_fx("button")
                 market.clear()
                 GAME_FLOW = "NEXT_LEVEL"
                 return
@@ -626,6 +652,7 @@ def market_screen():
                 cost = market_price(mcard)
                 if MONEY >= cost:
                     MONEY -= cost
+                    audio_fx("bought")
                     deck.buy(mcard.name)
                     market.remove(mcard)
 
@@ -702,6 +729,7 @@ def trait_screen():
             for trait_name in owned_traits:
                 rect = pygame.Rect(hit_x, hit_y, *TRAIT_ICON_SIZE)
                 if rect.collidepoint(vpos):
+                    audio_fx("button")
                     owned_traits.remove(trait_name)
                     return
                 hit_x += TRAIT_ICON_SIZE[0] + TRAIT_ICON_GAP
@@ -714,8 +742,10 @@ def trait_screen():
                 rect.center = (cx, cy)
                 if rect.collidepoint(vpos):
                     if len(owned_traits) < 5:
+                        audio_fx("button")
                         owned_traits.append(trait_name)
                         city_name     = City.change()['name']
+                        audio_bgm(city_name)
                         trait_choices = []
                         trait_screen.under = None
                         GAME_FLOW     = "NEXT_LEVEL"
@@ -725,7 +755,9 @@ def trait_screen():
             skip_rect         = pygame.Rect(0, 0, *BTN_SIZE)
             skip_rect.center  = (SCRN_WIDTH // 2, SCRN_HEIGHT - 60)
             if skip_rect.collidepoint(vpos):
+                audio_fx("button")
                 city_name     = City.change()['name']
+                audio_bgm(city_name)
                 trait_choices = []
                 trait_screen.under = None
                 GAME_FLOW     = "NEXT_LEVEL"
@@ -802,7 +834,7 @@ def trait_screen():
     present()
     clock.tick(60)    
 trait_screen.under = None
-    
+
 def _transition_slide(start_y, end_y, under_scene):
     # slide the transition curtain from start_y to end_y over the screen
     transition_path = "Assets/Images/ui_transition.png"
@@ -876,9 +908,10 @@ def next_level():
     GAME_FLOW = "PLAY"
 
 def game_over():
-    global RUNNING, GAME_FLOW, entered
+    global RUNNING, GAME_FLOW, AUDIO_ENABLED, entered
     # gameover screen with stats
 
+    CH_BGM.stop()
     if game_over.under is None:
         game_over.under = scrn.copy()
     if game_over.y is None:
