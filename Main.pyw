@@ -98,7 +98,7 @@ def draw_uses(surf):
 def get_sell_value(card, picked_cards):
     # final sell price = base * city bonus * trait mult
     # called every sell, traits are reflected instantly
-    value = float(card.sell)
+    value = int(card.sell)
 
     # helper counts
     # functions inside functions
@@ -128,6 +128,9 @@ def get_sell_value(card, picked_cards):
         pair = picked_type("Food")
         if pair >= 2:
             value *= 3
+
+    if "Fasting" in owned_traits and card.type == "Food":
+        value = 0
 
     if "Buffet" in owned_traits and card.type == "Food":
         value *= 2
@@ -180,6 +183,7 @@ def market_price(card):
     cost = card.market
     if "Negotiator" in owned_traits:
         cost = int(cost * 0.5)
+        cost = round_ten(cost)
     return cost
 
 def outline_image(image, color = GOLD, thickness = 2):
@@ -212,6 +216,11 @@ def reflow():
             card.place(i + 1)
         else:
             card.hide()
+
+def round_ten(num):
+    round = num // 10
+    num   = round * 10
+    return num
 
 # initiation
 def setup_home():
@@ -250,16 +259,16 @@ def setup_level():
 
     SCORE = 0
     if LEVEL == 1:
-        QUOTA = 500
+        QUOTA = 300
     else:
-        QUOTA = 500 + 25 * LEVEL * (LEVEL - 2) 
+        QUOTA = 300 + 20 * LEVEL * (LEVEL - 2)
+        QUOTA = round_ten(QUOTA)
 
     sells    = 3
     shuffles = 3
 
-    for trait_name in owned_traits:
-        bonus  = TRAIT_DEFS[trait_name].get("bonus_sells", 0)
-        sells += bonus
+    if "Fasting" in owned_traits:
+        sells += 3
 
     picked = []
     market.clear()
@@ -372,7 +381,7 @@ def new_game():
         deck.buy(name)
 
     LEVEL          = 1
-    MONEY          = 0
+    MONEY          = 500
     SCORE          = 0
     owned_traits   = []
     event_cooldown = 2
@@ -494,7 +503,8 @@ def play():
                     total += get_sell_value(card, picked)
                     deck.destroy(card)
                 SCORE += total
-                MONEY += total * 0.8
+                MONEY += total * 0.75
+                MONEY  = round_ten(MONEY)
                 sells -= 1
                 picked = []
                 reflow()
@@ -725,7 +735,7 @@ def trait_screen():
             vpos = virtual(e.pos)
 
             # click an owned trait -> drop it
-            hit_x, hit_y = 60, 160
+            hit_x, hit_y = 60, 90
             for trait_name in owned_traits:
                 rect = pygame.Rect(hit_x, hit_y, *TRAIT_ICON_SIZE)
                 if rect.collidepoint(vpos):
@@ -778,7 +788,7 @@ def trait_screen():
         midtop=(SCRN_WIDTH // 2, 40)))
 
     # owned traits row
-    draw_x, draw_y = 60, 160
+    draw_x, draw_y = 60, 90
     for trait_name in owned_traits:
         icon = load_image(trait_path.format(name=trait_name),
                           TRAIT_ICON_SIZE, emergency_color = BLUE)

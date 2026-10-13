@@ -91,10 +91,10 @@ def audio_fx(effect):
 
     match effect:                      # easily handles playing & switching audio & channels
         case "bought"    : CH_FX1.play(buy)
-        case "button"    : CH_FX2.play(click)
-        case "pick_card" : CH_FX2.play(pick)
+        case "button"    : CH_FX1.play(click)
+        case "pick_card" : CH_FX1.play(pick)
         case "sold"      : CH_FX1.play(sell)
-        case "shuffle"   : CH_FX1.play(shuffle)
+        case "shuffle"   : CH_FX2.play(shuffle)
         case "defeat"    : CH_FX2.play(lose)
         case "win_round" : CH_FX2.play(win_rnd)
 
@@ -374,14 +374,17 @@ class Tutorial:
 
     # image paths
     frame_path  = "Assets/Images/tutorial_screen.png"
-    arrow_left  = "Assets/Images/ui_pause.png"
-    arrow_right = "Assets/Images/ui_pause.png"
+    arrow_left  = "Assets/Images/arrow_left.png"
+    arrow_right = "Assets/Images/arrow_right.png"
+    close_path  = "Assets/Images/close.png"
 
     # sizes
     frame     = (900, 602)
     arrow     = (60, 60)
     slide_s   = (680, 383)
     slide_pos = (SCRN_WIDTH // 2, SCRN_HEIGHT // 2 + 50)
+    close_s   = (70, 70)
+    close_pos = (SCRN_WIDTH - 200, SCRN_HEIGHT - 560)
 
     def __init__(self):
         self.active    = False
@@ -414,6 +417,12 @@ class Tutorial:
         right.center     = (frame.right + arrow_w // 2 + 10, frame.centery + 65)
         return left, right
 
+    def _close_rect(self):
+        # close rects for collidepoints and image pos
+        rect        = pygame.Rect(0, 0, *self.close_s)
+        rect.center = self.close_pos
+        return rect
+
     # input
     def events(self, e):
         if   e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE: # close tutorial window
@@ -421,7 +430,13 @@ class Tutorial:
         elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
             vpos        = virtual(e.pos)
             left, right = self._arrow_rects()
-            
+
+            # exit
+            if self._close_rect().collidepoint(vpos):
+                self.close()
+                return
+
+            # arrows
             if   left.collidepoint(vpos) and self.slide > 0:
                 self.slide -= 1
             elif right.collidepoint(vpos) and self.slide < len(TUTORIAL_SLIDES) - 1:
@@ -458,6 +473,11 @@ class Tutorial:
 
         surf.blit(prev_arrow,  left_rect)
         surf.blit(next_arrow, right_rect)
+
+        # exit button
+        close_rect = self._close_rect()
+        close_img  = load_image(self.close_path, self.close_s, emergency_color = RED)
+        surf.blit(close_img, close_rect)
 
         # page/slide counter
         f        = Fonts.get("ANTEORS.ttf", 22)

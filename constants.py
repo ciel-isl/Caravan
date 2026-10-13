@@ -33,9 +33,9 @@ RAISE_Y  = 40
 DOCKER_Y = SCRN_HEIGHT * 0.80
 
 # traits
-TRAIT_ICON_SIZE = (55, 55)
-TRAIT_ICON_GAP  = 8
-OFFER_ICON_SIZE = (140, 140)
+TRAIT_ICON_SIZE = (90, 90)
+TRAIT_ICON_GAP  = 10
+OFFER_ICON_SIZE = (150, 150)
 
 # menu
 BTN_SIZE      = (SCRN_WIDTH * 0.20 - 5, SCRN_HEIGHT * 0.10 - 5)
@@ -88,9 +88,9 @@ CH_FX2 = pygame.mixer.Channel(2) # can   overlap channel
 current_bgm = None
 
 # volume (sets volume for all channels)
-pygame.mixer.Channel(0).set_volume(0.25)
-pygame.mixer.Channel(1).set_volume(0.30)
-pygame.mixer.Channel(2).set_volume(0.35)
+pygame.mixer.Channel(0).set_volume(0.24)
+pygame.mixer.Channel(1).set_volume(0.28)
+pygame.mixer.Channel(2).set_volume(0.36)
 
 # bgm
 HOME_BGM = pygame.mixer.Sound("Assets/Audio/home.mp3")
@@ -129,7 +129,7 @@ picked    = []
 LEVEL = 1
 SCORE = 0
 QUOTA = 500
-MONEY = 0.00
+MONEY = 0
 sells         = 3
 shuffles      = 3
 
@@ -176,40 +176,40 @@ CITY_BONUS = {
 
 # card catalogue
 CARD_DATA     = [
-    ("Shades",          "Clothing",       100, 200),
-    ("Fedora",          "Clothing",       250, 350),
-    ("Belt",            "Clothing",       400, 500),
-    ("T-shirt",         "Clothing",        400, 600),
-    ("Baggy Pants",     "Clothing",       500, 700),
-    ("Boots",           "Clothing",      700, 1000),
+    ("Shades",          "Clothing",       100,  200),
+    ("Fedora",          "Clothing",       200,  350),
+    ("Belt",            "Clothing",       300,  500),
+    ("T-shirt",         "Clothing",       350,  600),
+    ("Baggy Pants",     "Clothing",       400,  700),
+    ("Boots",           "Clothing",       600, 1000),
 
-    ("Chips",           "Food",           100, 150),
-    ("Water",           "Food",           100, 200),
-    ("Eggs",            "Food",           150, 300),
-    ("Chocolate",       "Food",           250, 450),
-    ("Baguette",        "Food",           350, 500),
-    ("Peanut Butter",   "Food",           600, 800),
+    ("Chips",           "Food",           100,  150),
+    ("Water",           "Food",           100,  200),
+    ("Eggs",            "Food",           150,  300),
+    ("Chocolate",       "Food",           250,  450),
+    ("Baguette",        "Food",           300,  550),
+    ("Peanut Butter",   "Food",           500,  800),
 
-    ("Paracetamol",     "Medicine",       300, 400),
-    ("Alcohol",         "Medicine",       200, 300),
-    ("Bandage",         "Medicine",       250, 350),
-    ("First-Aid",       "Medicine",       600, 800),
-    ("Band-Aid",        "Medicine",        50, 150),
-    ("Herbs",           "Medicine",       250, 500),
+    ("Band-Aid",        "Medicine",        50,  150),
+    ("Paracetamol",     "Medicine",       200,  300),
+    ("Alcohol",         "Medicine",       200,  350),
+    ("Bandage",         "Medicine",       250,  450),
+    ("Herbs",           "Medicine",       350,  600),
+    ("First-Aid",       "Medicine",       500,  800),
 
-    ("Miffy",           "Entertainment",  600, 900),
-    ("Rubiks",          "Entertainment",  300, 450),
-    ("Dice",            "Entertainment",  150, 250),
-    ("Basketball",      "Entertainment",  500, 650),
-    ("Toy Car",         "Entertainment",  300, 500),
-    ("Barbie",          "Entertainment",  300, 500),
+    ("Dice",            "Entertainment",  150,  250),
+    ("Rubiks",          "Entertainment",  250,  450),
+    ("Basketball",      "Entertainment",  350,  650),
+    ("Toy Car",         "Entertainment",  500,  800),
+    ("Barbie",          "Entertainment",  500,  800),
+    ("Miffy",           "Entertainment",  600, 1000),
 
-    ("Pen & Paper",     "School",          50, 150),
-    ("Boat",            "School",     10000, 99999),
-    ("Bag",             "School",         450, 600),
-    ("Flask",           "School",         550, 700),
-    ("Stapler",         "School",         100, 250),
-    ("Books",           "School",       1000, 1500),]
+    ("Pen & Paper",     "School",          50,  150),
+    ("Stapler",         "School",         100,  250),
+    ("Books",           "School",         400,  650),
+    ("Flask",           "School",         600,  900),
+    ("Bag",             "School",        1000, 1500),
+    ("Boat",            "School",       10000, 9999)]
 
 STARTING_DECK = ["Chips", "Water", "Eggs", "Chocolate", "Baguette", "Peanut Butter"]
 
@@ -220,9 +220,8 @@ TRAIT_DEFS = {
     "Too Dark":         {"desc": "x2 for each 'Shades'\nsold in a hand."},
     "Pajamas":          {"desc": "x2 to all 'Clothing'."},
     "Marathon":         {"desc": "+50 to all 'Clothing'\nwhen selling 'Boots'."},
-    "Peards 4Sale":     {"desc": "x3 when selling pairs of 'Food'."},
-    "Fasting":          {"desc": "+3 sell chances but 'Food' sells for 0",
-                         "type_mult": ("Food", 0), "bonus_sells": 3},
+    "Pears 4Sale":      {"desc": "x3 when selling pairs of 'Food'."},
+    "Fasting":          {"desc": "+3 sell chances but 'Food' sells for 0"},
     "Buffet":           {"desc": "x2 to all 'Food'."},
     "Worshipper":       {"desc": "x1.5 to all products."},
     "Inflation":        {"desc": "x2 to all 'Medicine'."},
