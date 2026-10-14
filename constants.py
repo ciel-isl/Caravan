@@ -47,15 +47,8 @@ PAUSE_BUTTONS = [
 
 # tutorial
 TUTORIAL_SLIDES = [
-    "Assets/Tutorial/slide1.png",
-    "Assets/Tutorial/slide2.png",
-    "Assets/Tutorial/slide3.png",
-    "Assets/Tutorial/slide4.png",
-    "Assets/Tutorial/slide5.png",
-    "Assets/Tutorial/slide6.png",
-    "Assets/Tutorial/slide7.png",
-    "Assets/Tutorial/slide8.png",
-    "Assets/Tutorial/slide9.png"
+    f"Assets/Tutorial/slide{i}.png"
+    for i in range(1, 24)
 ]
 
 # colours
